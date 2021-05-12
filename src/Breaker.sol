@@ -49,13 +49,13 @@ contract Breaker {
   event Deny(address indexed usr);
 
   // --- Math ---
-  function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
+  function _add(uint256 x, uint256 y) internal pure returns (uint256 z) {
     require((z = x + y) >= x);
   }
-  function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
+  function _sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
     require((z = x - y) <= x);
   }
-  function mul(uint x, uint y) internal pure returns (uint z) {
+  function _mul(uint x, uint y) internal pure returns (uint z) {
     require(y == 0 || (z = x * y) / y == x);
   }
 
@@ -130,7 +130,7 @@ contract Breaker {
     return true;
   }
   function increaseAllowance(address spender, uint256 addedValue) external returns (bool) {
-    uint256 newValue = add(allowance[msg.sender][spender], addedValue);
+    uint256 newValue = _add(allowance[msg.sender][spender], addedValue);
     allowance[msg.sender][spender] = newValue;
 
     emit Approval(msg.sender, spender, newValue);
@@ -151,8 +151,8 @@ contract Breaker {
   // --- Mint/Burn ---
   function _mint(address to, uint256 value) internal {
     require(to != address(0) && to != address(this), "Breaker/invalid-address");
-    balanceOf[to] = add(balanceOf[to], value);
-    totalSupply   = add(totalSupply, value);
+    balanceOf[to] = _add(balanceOf[to], value);
+    totalSupply   = _add(totalSupply, value);
 
     emit Transfer(address(0), to, value);
   }
@@ -170,7 +170,7 @@ contract Breaker {
     }
 
     balanceOf[from] = balance - value;
-    totalSupply     = sub(totalSupply, value);
+    totalSupply     = _sub(totalSupply, value);
 
     emit Transfer(from, address(0), value);
   }
@@ -203,7 +203,7 @@ contract Breaker {
   }
 
   function mkrToBkr(uint256 mkr) public pure returns (uint256 bkr) {
-    return mul(mkr, 10**9);
+    return _mul(mkr, 10**9);
   }
 
   function bkrToMkr(uint256 bkr) public pure returns (uint256 mkr) {
