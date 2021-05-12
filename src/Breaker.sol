@@ -234,9 +234,13 @@ contract Breaker {
     mkr = bkrToMkr(bkr);
     bkr = mkrToBkr(mkr);
 
-    if (msg.sender != to) {
-        allowance[msg.sender][to] = sub(allowance[to][msg.sender], bkr);
-        emit Approval(msg.sender, to, bkr);
+
+    if (to != msg.sender) {
+      uint256 allowed = allowance[to][msg.sender];
+      if (allowed != type(uint256).max) {
+        require(allowed >= bkr, "Breaker/insufficient-allowance");
+        allowance[to][msg.sender] = allowed - bkr;
+      }
     }
 
     _burn(to, bkr);
