@@ -46,15 +46,6 @@ contract BreakerTest is DSTest {
             keccak256(abi.encode(address(this), uint256(1))),
             bytes32(uint256(999999999999 ether))
         );
-
-    }
-
-    function testFail_basic_sanity() public {
-        assertTrue(false);
-    }
-
-    function test_basic_sanity() public {
-        assertTrue(true);
     }
 
     function test_wrap() public {

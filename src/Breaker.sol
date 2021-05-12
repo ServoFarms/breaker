@@ -31,21 +31,6 @@ interface MKRToken {
 
 contract Breaker {
 
-  // --- Auth ---
-  mapping (address => uint256) public wards;
-  function rely(address usr) external auth {
-    wards[usr] = 1;
-    emit Rely(usr);
-  }
-  function deny(address usr) external auth {
-    wards[usr] = 0;
-    emit Deny(usr);
-  }
-  modifier auth {
-    require(wards[msg.sender] == 1, "Breaker/not-authorized");
-    _;
-  }
-
   // --- ERC20 Data ---
   string   public constant name     = "Breaker Token";
   string   public constant symbol   = "BKR";
@@ -83,9 +68,6 @@ contract Breaker {
   bytes32 public  constant  PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
 
   constructor() public {
-    wards[msg.sender] = 1;
-    emit Rely(msg.sender);
-
     uint256 chainId;
     assembly {chainId := chainid()}
     deploymentChainId = chainId;
@@ -224,11 +206,11 @@ contract Breaker {
   }
 
   function mkrToBkr(uint256 mkr) public pure returns (uint256 bkr) {
-    return mul(mkr, 1000000000);
+    return mul(mkr, 10**9);
   }
 
   function bkrToMkr(uint256 bkr) public pure returns (uint256 mkr) {
-    return divup(bkr, 1000000000);
+    return divup(bkr, 10**9);
   }
 
   /**
