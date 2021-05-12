@@ -51,6 +51,7 @@ contract BreakerTest is DSTest {
     function test_wrap() public {
         uint256 bal = IERC20(mkr).balanceOf(address(this));
         assertEq(bal, 999999999999 * WAD);
+        assertEq(breaker.balanceOf(address(this)), 0);
 
         breaker.MKR().approve(address(breaker), uint256(-1));
         breaker.makeBreaker(address(this), 10 * WAD);
@@ -63,8 +64,25 @@ contract BreakerTest is DSTest {
         assertEq(bbal, breaker.mkrToBkr(10 * WAD));
     }
 
+    function test_wrap_one_conti() public {
+        breaker.MKR().approve(address(breaker), uint256(-1));
+        breaker.makeBreaker(address(this), 1);
+
+        uint256 bbal = breaker.balanceOf(address(this));
+        assertEq(bbal, 10 ** 9);
+    }
+
+    function test_wrap_one_mkr() public {
+        breaker.MKR().approve(address(breaker), uint256(-1));
+        breaker.makeBreaker(address(this), 1 * WAD);
+
+        uint256 bbal = breaker.balanceOf(address(this));
+        assertEq(bbal, 1 * WAD * 10 ** 9);
+    }
+
     function test_unwrap() public {
         uint256 bal = IERC20(mkr).balanceOf(address(this));
+        assertEq(breaker.balanceOf(address(this)), 0);
         assertEq(bal, 999999999999 * WAD);
         breaker.MKR().approve(address(breaker), uint256(-1));
         breaker.makeBreaker(address(this), 10000 * WAD);
@@ -79,5 +97,20 @@ contract BreakerTest is DSTest {
         assertEq(bbal, breaker.mkrToBkr(1000 * WAD));
     }
 
+    function test_unwrap_small() public {
+        uint256 bal = IERC20(mkr).balanceOf(address(this));
+        assertEq(breaker.balanceOf(address(this)), 0);
+        assertEq(bal, 999999999999 * WAD);
+        breaker.MKR().approve(address(breaker), uint256(-1));
+        breaker.makeBreaker(address(this), 10000 * WAD);
 
+        breaker.makeMaker(address(this), 1337); // smol amt
+
+        uint256 aft = IERC20(mkr).balanceOf(address(this));
+        assertEq(aft, bal - 10000 * WAD);
+
+        uint256 bbal = breaker.balanceOf(address(this));
+        assertEq(bbal, 10000 * WAD * 1000000000);
+        assertEq(bbal, breaker.mkrToBkr(10000 * WAD));
+    }
 }

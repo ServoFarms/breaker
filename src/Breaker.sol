@@ -58,9 +58,6 @@ contract Breaker {
   function mul(uint x, uint y) internal pure returns (uint z) {
     require(y == 0 || (z = x * y) / y == x);
   }
-  function divup(uint256 x, uint256 y) internal pure returns (uint256 z) {
-    z = add(x, sub(y, 1)) / y;
-  }
 
   // --- EIP712 niceties ---
   uint256 public  immutable deploymentChainId;
@@ -210,7 +207,7 @@ contract Breaker {
   }
 
   function bkrToMkr(uint256 bkr) public pure returns (uint256 mkr) {
-    return divup(bkr, 10**9);
+    return bkr / 10**9;
   }
 
   /**
