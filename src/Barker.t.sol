@@ -55,7 +55,7 @@ contract BarkerTest is DSTest {
         assertEq(barker.balanceOf(address(this)), 0);
 
         barker.MKR().approve(address(barker), uint256(-1));
-        barker.barker(address(this), 10 * WAD);
+        barker.barker(10 * WAD);
 
         uint256 aft = IERC20(mkr).balanceOf(address(this));
         assertEq(aft, bal - 10 * WAD);
@@ -67,7 +67,7 @@ contract BarkerTest is DSTest {
 
     function test_wrap_one_conti() public {
         barker.MKR().approve(address(barker), uint256(-1));
-        barker.barker(address(this), 1);
+        barker.barker(1);
 
         uint256 bbal = barker.balanceOf(address(this));
         assertEq(bbal, 10 ** 9);
@@ -75,7 +75,7 @@ contract BarkerTest is DSTest {
 
     function test_wrap_one_mkr() public {
         barker.MKR().approve(address(barker), uint256(-1));
-        barker.barker(address(this), 1 * WAD);
+        barker.barker(1 * WAD);
 
         uint256 bbal = barker.balanceOf(address(this));
         assertEq(bbal, 1 * WAD * 10 ** 9);
@@ -86,9 +86,9 @@ contract BarkerTest is DSTest {
         assertEq(barker.balanceOf(address(this)), 0);
         assertEq(bal, 999999999999 * WAD);
         barker.MKR().approve(address(barker), uint256(-1));
-        barker.barker(address(this), 10000 * WAD);
+        barker.barker(10000 * WAD);
 
-        barker.maker(address(this), 9000 * WAD * 1000000000);
+        barker.maker(9000 * WAD * 1000000000);
 
         uint256 aft = IERC20(mkr).balanceOf(address(this));
         assertEq(aft, bal - 1000 * WAD);
@@ -103,9 +103,9 @@ contract BarkerTest is DSTest {
         assertEq(barker.balanceOf(address(this)), 0);
         assertEq(bal, 999999999999 * WAD);
         barker.MKR().approve(address(barker), uint256(-1));
-        barker.barker(address(this), 10000 * WAD);
+        barker.barker(10000 * WAD);
 
-        barker.maker(address(this), 1337); // smol amt
+        barker.maker(1337); // smol amt
 
         uint256 aft = IERC20(mkr).balanceOf(address(this));
         assertEq(aft, bal - 10000 * WAD);

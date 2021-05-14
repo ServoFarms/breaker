@@ -212,42 +212,31 @@ contract Barker {
 
   /**
   * @dev   Make Maker into Barker
-  * @param to   address to send Barker tokens
   * @param mkr  amount of MKR tokens to be wrapped
   */
-  function barker(address to, uint256 mkr) public returns (uint256 bkr) {
+  function barker(uint256 mkr) public returns (uint256 bkr) {
     MKR.transferFrom(
         msg.sender,
         address(this),
         mkr
     );
     bkr = mkrToBkr(mkr);
-    _mint(to, bkr);
+    _mint(msg.sender, bkr);
   }
 
   /**
   * @dev   Make Barker into Maker
-  * @param to   address to send Maker tokens
   * @param bkr  amount of tokens to be unwrapped
   */
-  function maker(address to, uint256 bkr) public returns (uint256 mkr) {
+  function maker(uint256 bkr) public returns (uint256 mkr) {
     mkr = bkrToMkr(bkr);
     bkr = mkrToBkr(mkr);
 
-
-    if (to != msg.sender) {
-      uint256 allowed = allowance[to][msg.sender];
-      if (allowed != type(uint256).max) {
-        require(allowed >= bkr, "Barker/insufficient-allowance");
-        allowance[to][msg.sender] = allowed - bkr;
-      }
-    }
-
-    _burn(to, bkr);
+    _burn(msg.sender, bkr);
 
     MKR.transferFrom(
         address(this),
-        to,
+        msg.sender,
         mkr
     );
   }
