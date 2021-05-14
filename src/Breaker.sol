@@ -212,11 +212,7 @@ contract Breaker {
     balanceOf[msg.sender] = balance - bkr;
     totalSupply     = _sub(totalSupply, bkr);
 
-    MKR.transferFrom(
-        address(this),
-        msg.sender,
-        mkr
-    );
+    MKR.transfer(msg.sender, mkr);
 
     emit Transfer(msg.sender, address(0), bkr);
   }
