@@ -226,7 +226,7 @@ contract Barker {
 
   /**
   * @dev   Make Barker into Maker
-  * @param bkr  amount of tokens to be unwrapped
+  * @param bkr  amount of tokens to be unwrapped (amount will be rounded to Conti units)
   */
   function maker(uint256 bkr) public returns (uint256 mkr) {
     mkr = bkrToMkr(bkr);
