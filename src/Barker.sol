@@ -231,9 +231,7 @@ contract Barker {
   function maker(uint256 bkr) public returns (uint256 mkr) {
     mkr = bkrToMkr(bkr);
     bkr = mkrToBkr(mkr);
-
     _burn(msg.sender, bkr);
-
     MKR.transferFrom(
         address(this),
         msg.sender,
