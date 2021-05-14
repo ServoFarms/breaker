@@ -185,6 +185,7 @@ contract Breaker {
 
   /**
   * @dev   Make Maker into Breaker
+  *        (user must approve() this contract on MKR)
   * @param mkr  amount of MKR tokens to be wrapped
   */
   function breaker(uint256 mkr) public returns (uint256 bkr) {
