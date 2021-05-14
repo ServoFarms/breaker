@@ -21,6 +21,27 @@ interface IERC20 {
   function approve( address spender, uint value ) external returns (bool ok);
 }
 
+contract BreakerBreaker {
+
+    Breaker bkr;
+
+    constructor(address _breaker) public {
+        bkr = Breaker(_breaker);
+    }
+
+    function approve(address _token) public {
+        IERC20(_token).approve(address(bkr), uint256(-1));
+    }
+
+    function breaker(uint256 _mkr) public returns (uint256 _bkr) {
+        _bkr = bkr.breaker(_mkr);
+    }
+
+    function maker(uint256 _bkr) public returns (uint256 _mkr) {
+        _mkr = bkr.maker(_bkr);
+    }
+}
+
 contract BreakerTest is DSTest {
     Breaker breaker;
 
@@ -113,5 +134,29 @@ contract BreakerTest is DSTest {
         uint256 bbal = breaker.balanceOf(address(this));
         assertEq(bbal, 10000 * WAD * 1000000000);
         assertEq(bbal, breaker.mkrToBkr(10000 * WAD));
+    }
+
+    function test_user_interaction() public {
+        BreakerBreaker user = new BreakerBreaker(address(breaker));
+        breaker.MKR().transferFrom(address(this), address(user), 100 * WAD);
+        assertEq(breaker.MKR().balanceOf(address(user)), 100 * WAD);
+
+        user.approve(mkr);
+
+        user.breaker(50 * WAD);
+        assertEq(breaker.MKR().balanceOf(address(user)), 50 * WAD);
+        assertEq(breaker.balanceOf(address(user)), 50 * WAD * 10**9);
+
+        user.maker(25 * WAD * 10**9 + 123456);
+        assertEq(breaker.MKR().balanceOf(address(user)), 75 * WAD);
+        assertEq(breaker.balanceOf(address(user)), 25 * WAD * 10**9);
+
+        user.breaker(75 * WAD);
+        assertEq(breaker.MKR().balanceOf(address(user)), 0);
+        assertEq(breaker.balanceOf(address(user)), 100 * WAD * 10**9);
+
+        user.maker(100 * WAD * 10**9);
+        assertEq(breaker.MKR().balanceOf(address(user)), 100 * WAD);
+        assertEq(breaker.balanceOf(address(user)), 0);
     }
 }
