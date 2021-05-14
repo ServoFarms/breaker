@@ -32,8 +32,8 @@ interface MKRToken {
 contract Barker {
 
   // --- ERC20 Data ---
-  string   public constant name     = "Barker Token";
-  string   public constant symbol   = "BRKR";
+  string   public constant name     = "Breaker Token";
+  string   public constant symbol   = "BKR";
   string   public constant version  = "1";
   uint8    public constant decimals = 18;
   MKRToken public constant MKR      = MKRToken(0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2);
@@ -148,33 +148,6 @@ contract Barker {
     return true;
   }
 
-  // --- Mint/Burn ---
-  function _mint(address to, uint256 value) internal {
-    require(to != address(0) && to != address(this), "Barker/invalid-address");
-    balanceOf[to] = _add(balanceOf[to], value);
-    totalSupply   = _add(totalSupply, value);
-
-    emit Transfer(address(0), to, value);
-  }
-  function _burn(address from, uint256 value) internal {
-    uint256 balance = balanceOf[from];
-    require(balance >= value, "Barker/insufficient-balance");
-
-    if (from != msg.sender) {
-      uint256 allowed = allowance[from][msg.sender];
-      if (allowed != type(uint256).max) {
-        require(allowed >= value, "Barker/insufficient-allowance");
-
-        allowance[from][msg.sender] = allowed - value;
-      }
-    }
-
-    balanceOf[from] = balance - value;
-    totalSupply     = _sub(totalSupply, value);
-
-    emit Transfer(from, address(0), value);
-  }
-
   // --- Approve by signature ---
   function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
     require(block.timestamp <= deadline, "Barker/permit-expired");
@@ -221,7 +194,9 @@ contract Barker {
         mkr
     );
     bkr = mkrToBkr(mkr);
-    _mint(msg.sender, bkr);
+    balanceOf[msg.sender] = _add(balanceOf[msg.sender], bkr);
+    totalSupply   = _add(totalSupply, bkr);
+    emit Transfer(address(0), msg.sender, bkr);
   }
 
   /**
@@ -231,11 +206,18 @@ contract Barker {
   function maker(uint256 bkr) public returns (uint256 mkr) {
     mkr = bkrToMkr(bkr);
     bkr = mkrToBkr(mkr);
-    _burn(msg.sender, bkr);
+
+    uint256 balance = balanceOf[msg.sender];
+    require(balance >= bkr, "Barker/insufficient-balance");
+    balanceOf[msg.sender] = balance - bkr;
+    totalSupply     = _sub(totalSupply, bkr);
+
     MKR.transferFrom(
         address(this),
         msg.sender,
         mkr
     );
+
+    emit Transfer(msg.sender, address(0), bkr);
   }
 }
